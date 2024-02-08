@@ -12,10 +12,13 @@ class UserController extends Controller
 
         $user->update($request->only(['first_name', 'last_name', 'email']));
 
-        $user->addresses()->update(
-            ['user_id' => $user->id],
-            $request->only(['addressline1', 'addressline2', 'city', 'province', 'phone', 'postal'])
-        );
+        if ($user->addresses()->exists()) {
+
+            $user->addresses()->first()->update($request->only(['addressline1', 'addressline2', 'city', 'province', 'phone', 'postal']));
+        } else {
+
+            return back()->with('success', 'БД не оновлено (addresses)!');
+        }
 
         return back()->with('success', 'БД оновлено!');
     }
